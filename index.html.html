@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ready — Diagnóstico Estratégico de IA | Sebastião Nunes</title>
+<meta name="description" content="Avalie gratuitamente o nível de maturidade da sua empresa para implantar Inteligência Artificial e descubra quais processos têm maior potencial de ganho real.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0B1628; --navy-mid: #152035; --navy-light: #1E2F48;
+    --accent: #00C49A; --accent-dim: rgba(0,196,154,0.12); --accent-dim2: rgba(0,196,154,0.06);
+    --white: #FFFFFF; --gray-100: #F4F6F9; --gray-300: #C8D0DC; --gray-500: #7A8899; --gray-700: #3D4E62;
+    --danger: #E24B4A; --warn: #EF9F27;
+    --font-display: 'Syne', sans-serif; --font-body: 'Inter', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--navy); color: var(--white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(11,22,40,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-cta { background: var(--accent); color: var(--navy); padding: 9px 22px; border-radius: 6px; font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity 0.2s; }
+  .nav-cta:hover { opacity: 0.85; }
+
+  .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 48px 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(0,196,154,0.08) 0%, transparent 70%); pointer-events: none; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-dim); border: 1px solid rgba(0,196,154,0.25); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 24px; }
+  .hero-eyebrow::before { content: '●'; font-size: 8px; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(36px, 4vw, 54px); font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero-sub { font-size: 17px; color: var(--gray-300); line-height: 1.7; margin-bottom: 36px; max-width: 480px; }
+  .hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .btn-primary { background: var(--accent); color: var(--navy); padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 700; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost { color: var(--gray-300); font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+  .btn-ghost:hover { color: var(--white); }
+  .hero-stat-row { display: flex; gap: 32px; margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .hero-stat-num { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .hero-stat-label { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+  .hero-visual { background: var(--navy-mid); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; position: relative; }
+  .hero-visual::before { content: 'AI Ready — Diagnóstico'; display: block; font-size: 11px; color: var(--gray-500); margin-bottom: 20px; letter-spacing: 0.5px; }
+  .visual-level { background: var(--accent-dim2); border: 1px solid rgba(0,196,154,0.15); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+  .visual-level-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .visual-level-name { font-size: 13px; color: var(--gray-300); flex: 1; }
+  .visual-level-bar { flex: 2; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+  .visual-level-fill { height: 6px; border-radius: 3px; }
+  .visual-level-val { font-size: 12px; color: var(--gray-500); width: 36px; text-align: right; }
+  .visual-badge { margin-top: 16px; padding: 12px 16px; background: rgba(0,196,154,0.1); border: 1px solid rgba(0,196,154,0.2); border-radius: 8px; font-size: 13px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+
+  section { padding: 96px 48px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .section-title { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
+  .section-sub { font-size: 16px; color: var(--gray-300); line-height: 1.7; max-width: 560px; }
+
+  .problema { background: var(--navy-mid); }
+  .problema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; margin-top: 56px; }
+  .problema-stat { font-family: var(--font-display); font-size: 96px; font-weight: 800; color: var(--danger); line-height: 1; letter-spacing: -4px; margin-bottom: 8px; }
+  .problema-stat-label { font-size: 18px; color: var(--white); font-weight: 600; margin-bottom: 16px; }
+  .problema-stat-desc { font-size: 15px; color: var(--gray-300); line-height: 1.7; margin-bottom: 24px; }
+  .fontes { display: flex; flex-direction: column; gap: 8px; }
+  .fonte-item { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gray-500); }
+  .fonte-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .problema-causas { display: flex; flex-direction: column; gap: 16px; }
+  .causa-item { display: flex; align-items: flex-start; gap: 14px; background: var(--navy); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 16px 18px; }
+  .causa-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(226,75,74,0.12); color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .causa-title { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .causa-desc { font-size: 13px; color: var(--gray-500); line-height: 1.5; }
+
+  .solucao-intro { max-width: 640px; margin-bottom: 56px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .step-card { background: var(--navy-mid); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 28px; position: relative; overflow: hidden; transition: border-color 0.2s; }
+  .step-card:hover { border-color: rgba(0,196,154,0.3); }
+  .step-num { font-family: var(--font-display); font-size: 48px; font-weight: 800; color: rgba(0,196,154,0.12); line-height: 1; margin-bottom: 16px; }
+  .step-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+  .step-desc { font-size: 14px; color: var(--gray-500); line-height: 1.6; }
+  .step-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); opacity: 0; transition: opacity 0.2s; }
+  .step-card:hover .step-accent { opacity: 1; }
+
+  .sobre { background: var(--navy-mid); }
+  .sobre-grid { display: grid; grid-template-columns: 280px 1fr; gap: 64px; align-items: start; margin-top: 56px; }
+  .sobre-avatar { width: 100%; aspect-ratio: 1; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+  .sobre-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sobre-name { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .sobre-title { font-size: 14px; color: var(--accent); font-weight: 500; margin-bottom: 20px; }
+  .sobre-bio { font-size: 15px; color: var(--gray-300); line-height: 1.8; margin-bottom: 28px; }
+  .sobre-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sobre-tag { background: var(--accent-dim); border: 1px solid rgba(0,196,154,0.2); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+
+  .diagnostico { padding: 96px 48px; }
+  .diagnostico-intro { text-align: center; max-width: 640px; margin: 0 auto 56px; }
+  .tool-wrapper { max-width: 720px; margin: 0 auto; background: var(--navy-mid); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; overflow: hidden; }
+
+  .cta-final { background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%); border-top: 1px solid rgba(255,255,255,0.06); text-align: center; padding: 96px 48px; }
+  .cta-final .section-title { max-width: 600px; margin: 0 auto 16px; }
+  .cta-final .section-sub { margin: 0 auto 36px; text-align: center; }
+
+  footer { background: var(--navy); border-top: 1px solid rgba(255,255,255,0.06); padding: 32px 48px; text-align: center; font-size: 13px; color: var(--gray-700); }
+  footer a { color: var(--gray-500); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* FERRAMENTA */
+  .tool-body { font-family: var(--font-body); color: var(--white); }
+  .tool-body h2 { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .tool-body .tsub { font-size: 14px; color: var(--gray-300); margin-bottom: 20px; line-height: 1.5; }
+  .prog-label { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; }
+  .prog-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 4px; margin-bottom: 24px; }
+  .prog-fill { height: 3px; border-radius: 4px; transition: width 0.3s; }
+  .prog-fill.azul { background: #185FA5; }
+  .prog-fill.verde { background: var(--accent); }
+  .dim-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .dim-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+  .dim-icon.azul { background: rgba(24,95,165,0.15); }
+  .dim-icon.verde { background: var(--accent-dim); }
+  .dim-title { font-size: 15px; font-weight: 600; color: var(--white); }
+  .dim-desc { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+  .critica-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(226,75,74,0.15); color: #F7A09F; margin-left: 8px; font-weight: 500; vertical-align: middle; }
+  .question { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 14px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.06); }
+  .q-text { font-size: 14px; color: var(--white); line-height: 1.5; margin-bottom: 10px; font-weight: 500; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .opt { padding: 8px 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; font-size: 12px; color: var(--gray-300); cursor: pointer; background: rgba(255,255,255,0.03); line-height: 1.4; text-align: left; transition: all 0.15s; }
+  .opt:hover { border-color: #185FA5; color: #7BB8F5; background: rgba(24,95,165,0.12); }
+  .opt.sel { border-color: #185FA5; color: #7BB8F5; background: rgba(24,95,165,0.15); font-weight: 600; }
+  .opt.sel-verde, .opt.sel-verde:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); font-weight: 600; }
+  .tnav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+  .tnav-3 { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 8px; }
+  .tbtn { padding: 9px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: var(--gray-300); font-weight: 500; transition: all 0.15s; font-family: var(--font-body); }
+  .tbtn:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+  .tbtn.primary { background: #185FA5; color: var(--white); border-color: #185FA5; }
+  .tbtn.primary:hover { background: #0C447C; }
+  .tbtn.verde { background: var(--accent); color: var(--navy); border-color: var(--accent); font-weight: 700; }
+  .tbtn.verde:hover { opacity: 0.88; }
+  .tbtn.outline-verde { background: transparent; color: var(--accent); border-color: var(--accent); }
+  .tbtn.outline-verde:hover { background: var(--accent-dim); }
+  .tbtn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .step-ind { font-size: 12px; color: var(--gray-500); }
+  .fase-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 14px; }
+  .fase-badge.azul { background: rgba(24,95,165,0.2); color: #7BB8F5; }
+  .fase-badge.verde { background: var(--accent-dim); color: var(--accent); }
+  .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .area-card { padding: 12px 14px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; cursor: pointer; background: rgba(255,255,255,0.03); transition: all 0.15s; text-align: left; }
+  .area-card:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .area-card.sel { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+  .area-card .area-icon { font-size: 18px; margin-bottom: 4px; }
+  .area-card .area-nome { font-size: 13px; color: var(--gray-300); font-weight: 500; }
+  .area-card.sel .area-nome { color: var(--accent); }
+  .area-card.livre { border-style: dashed; }
+  .input-livre { width: 100%; padding: 10px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; font-size: 14px; margin-top: 8px; color: var(--white); background: rgba(255,255,255,0.05); font-family: var(--font-body); }
+  .input-livre:focus { outline: none; border-color: var(--accent); }
+  .proc-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 6px; cursor: pointer; background: rgba(255,255,255,0.03); transition: all 0.15s; }
+  .proc-item:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .proc-item.sel { border-color: var(--accent); background: var(--accent-dim); }
+  .proc-item.respondido { opacity: 0.5; cursor: default; }
+  .proc-check { width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; }
+  .proc-item.sel .proc-check { background: var(--accent); border-color: var(--accent); color: var(--navy); }
+  .proc-item.respondido .proc-check { background: var(--gray-700); border-color: var(--gray-700); color: var(--white); }
+  .proc-nome { font-size: 13px; color: var(--gray-300); }
+  .proc-tag { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: var(--accent-dim); color: var(--accent); margin-left: 6px; }
+  .proc-hint { font-size: 12px; color: var(--gray-500); margin-bottom: 10px; }
+  .add-proc { display: flex; gap: 8px; margin-top: 8px; }
+  .add-proc input { flex: 1; padding: 9px 12px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; font-size: 13px; color: var(--white); background: rgba(255,255,255,0.05); font-family: var(--font-body); }
+  .add-proc input:focus { outline: none; border-color: var(--accent); }
+  .add-proc button { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent-dim); color: var(--accent); font-size: 13px; cursor: pointer; font-weight: 500; font-family: var(--font-body); }
+  .proc-aviso { background: var(--accent-dim); border: 1px solid rgba(0,196,154,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--accent); margin-bottom: 12px; line-height: 1.5; }
+  .r-badge { display: inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .r-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; font-family: var(--font-display); }
+  .r-sub { font-size: 14px; color: var(--gray-300); line-height: 1.6; margin-bottom: 20px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .bar-label { font-size: 13px; color: var(--gray-300); width: 185px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 8px; border-radius: 4px; }
+  .bar-val { font-size: 12px; color: var(--gray-500); width: 32px; text-align: right; }
+  .alerta-wrap { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.25); border-radius: 10px; padding: 16px; margin: 14px 0; }
+  .alerta-titulo { font-size: 14px; font-weight: 600; color: #F7A09F; margin-bottom: 10px; }
+  .alerta-geral { font-size: 13px; color: #F7A09F; line-height: 1.6; margin-bottom: 12px; }
+  .dim-alerta { background: rgba(255,255,255,0.04); border: 1px solid rgba(226,75,74,0.2); border-radius: 8px; padding: 12px; margin-top: 10px; }
+  .dim-alerta-titulo { font-size: 13px; font-weight: 600; color: #F7A09F; margin-bottom: 5px; }
+  .dim-alerta-texto { font-size: 13px; color: rgba(247,160,159,0.8); line-height: 1.6; }
+  .ok-box { background: var(--accent-dim); border: 1px solid rgba(0,196,154,0.25); border-radius: 10px; padding: 16px; margin: 14px 0; }
+  .ok-titulo { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+  .ok-texto { font-size: 13px; color: rgba(0,196,154,0.8); line-height: 1.6; }
+  .premio-box { background: var(--accent-dim); border: 2px solid rgba(0,196,154,0.3); border-radius: 12px; padding: 20px; margin: 16px 0; text-align: center; }
+  .premio-icon { font-size: 36px; margin-bottom: 8px; }
+  .premio-titulo { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 8px; font-family: var(--font-display); }
+  .premio-texto { font-size: 13px; color: rgba(0,196,154,0.8); line-height: 1.6; margin-bottom: 16px; }
+  .tcta-box { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 18px; margin-top: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+  .tcta-box p { font-size: 13px; color: var(--gray-300); margin-bottom: 14px; line-height: 1.5; }
+  .treiniciar { margin-top: 12px; font-size: 12px; color: var(--gray-500); cursor: pointer; background: none; border: none; text-decoration: underline; display: block; margin-left: auto; margin-right: auto; font-family: var(--font-body); }
+  .tag-ok { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: var(--accent-dim); color: var(--accent); margin-left: 5px; font-weight: 500; }
+  .tag-fail { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: rgba(226,75,74,0.15); color: #F7A09F; margin-left: 5px; font-weight: 500; }
+  .proc-result-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .proc-result-card.top { border-color: rgba(0,196,154,0.3); border-width: 2px; }
+  .proc-rank { font-size: 11px; font-weight: 600; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .proc-result-nome { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .proc-score-geral { font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 10px; }
+  .crit-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .crit-nome { font-size: 12px; color: var(--gray-500); width: 200px; flex-shrink: 0; }
+  .crit-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+  .crit-fill { height: 6px; border-radius: 4px; background: var(--accent); }
+  .crit-val { font-size: 11px; color: var(--gray-500); width: 28px; text-align: right; }
+  .proc-just { font-size: 13px; color: var(--gray-300); line-height: 1.6; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .livre-aviso { background: rgba(239,159,39,0.1); border: 1px solid rgba(239,159,39,0.25); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--warn); margin-top: 8px; line-height: 1.5; }
+  .proc-header { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 14px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06); }
+  .setor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0; }
+  .setor-card { padding: 10px 14px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.03); transition: all 0.15s; font-size: 13px; color: var(--gray-300); }
+  .setor-card:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .setor-card.sel { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); font-weight: 600; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { display: none; }
+    section { padding: 64px 20px; }
+    .problema-grid { grid-template-columns: 1fr; gap: 40px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .sobre-grid { grid-template-columns: 1fr; }
+    .sobre-avatar { max-width: 200px; }
+    .tool-wrapper { padding: 20px; }
+    .opts { grid-template-columns: 1fr; }
+    .area-grid { grid-template-columns: 1fr; }
+    .setor-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">AI<span>Ready</span></div>
+  <a href="#" class="nav-cta" onclick="document.getElementById('diagnostico').scrollIntoView({behavior:'smooth'});return false;">Fazer diagnóstico</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Diagnóstico estratégico gratuito</div>
+      <h1>Sua empresa está pronta para <em>implantar IA</em> com resultado real?</h1>
+      <p class="hero-sub">A maioria das empresas adota IA sem as bases certas — e paga caro por isso. O AI Ready é um diagnóstico estratégico que revela onde você está e por onde começar.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary" onclick="document.getElementById('diagnostico').scrollIntoView({behavior:'smooth'});return false;">Iniciar diagnóstico gratuito →</a>
+      </div>
+      <div class="hero-stat-row">
+        <div><div class="hero-stat-num">+80%</div><div class="hero-stat-label">dos projetos de IA falham</div></div>
+        <div><div class="hero-stat-num">7</div><div class="hero-stat-label">dimensões avaliadas</div></div>
+        <div><div class="hero-stat-num">15min</div><div class="hero-stat-label">para ter seu diagnóstico</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="visual-level"><div class="visual-level-dot" style="background:#1D9E75"></div><div class="visual-level-name">Estratégia e visão</div><div class="visual-level-bar"><div class="visual-level-fill" style="width:80%;background:#1D9E75"></div></div><div class="visual-level-val">4/5</div></div>
+      <div class="visual-level"><div class="visual-level-dot" style="background:#EF9F27"></div><div class="visual-level-name">Dados e tecnologia</div><div class="visual-level-bar"><div class="visual-level-fill" style="width:50%;background:#EF9F27"></div></div><div class="visual-level-val">2.5/5</div></div>
+      <div class="visual-level"><div class="visual-level-dot" style="background:#E24B4A"></div><div class="visual-level-name">Governança e liderança</div><div class="visual-level-bar"><div class="visual-level-fill" style="width:30%;background:#E24B4A"></div></div><div class="visual-level-val">1.5/5</div></div>
+      <div class="visual-level"><div class="visual-level-dot" style="background:#1D9E75"></div><div class="visual-level-name">Pessoas e cultura</div><div class="visual-level-bar"><div class="visual-level-fill" style="width:70%;background:#1D9E75"></div></div><div class="visual-level-val">3.5/5</div></div>
+      <div class="visual-badge">⚠️ Governança abaixo do mínimo — ação necessária antes de implantar IA</div>
+    </div>
+  </div>
+</section>
+
+<section class="problema">
+  <div class="section-inner">
+    <div class="section-eyebrow">O problema</div>
+    <div class="problema-grid">
+      <div>
+        <div class="problema-stat">+80%</div>
+        <div class="problema-stat-label">dos projetos de IA não entregam resultado</div>
+        <p class="problema-stat-desc">Não é falha da tecnologia. É falta de fundação. Empresas que adotam IA sem as bases certas desperdiçam investimento, frustram equipes e perdem credibilidade internamente.</p>
+        <div class="fontes">
+          <div class="fonte-item"><div class="fonte-dot"></div>RAND Corporation (2024): mais de 80% dos projetos de IA falham — o dobro da taxa de falha de projetos de TI tradicionais</div>
+          <div class="fonte-item"><div class="fonte-dot"></div>MIT Project NANDA (2025): 95% das organizações que implantaram IA generativa não obtiveram retorno financeiro mensurável</div>
+          <div class="fonte-item"><div class="fonte-dot"></div>S&P Global (2025): 42% das empresas abandonaram a maioria de suas iniciativas de IA — alta de 17% em 2024 para 42% em 2025</div>
+          <div class="fonte-item"><div class="fonte-dot"></div>Gartner (2024): apenas 48% dos projetos de IA chegam à fase de produção</div>
+        </div>
+      </div>
+      <div class="problema-causas">
+        <div class="causa-item"><div class="causa-icon">⚡</div><div><div class="causa-title">IA comprada antes da estratégia definida</div><div class="causa-desc">Projetos sem conexão com os objetivos do negócio viram experimentos caros sem fim.</div></div></div>
+        <div class="causa-item"><div class="causa-icon">📊</div><div><div class="causa-title">Dados desorganizados ou inacessíveis</div><div class="causa-desc">IA opera sobre dados. Sem qualidade e estrutura, os resultados são ruins independente da ferramenta.</div></div></div>
+        <div class="causa-item"><div class="causa-icon">👥</div><div><div class="causa-title">Pessoas e cultura despreparadas</div><div class="causa-desc">Resistência cultural é silenciosa e subestimada. Ferramentas implantadas que ninguém usa.</div></div></div>
+        <div class="causa-item"><div class="causa-icon">🏛️</div><div><div class="causa-title">Ausência de governança</div><div class="causa-desc">Sem responsável claro e critérios definidos, as iniciativas dependem de entusiasmo individual — e param.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="section-inner">
+    <div class="section-eyebrow">Como funciona</div>
+    <div class="solucao-intro">
+      <h2 class="section-title">Dois diagnósticos. Um caminho claro.</h2>
+      <p class="section-sub">O AI Ready avalia sua empresa em duas etapas complementares — da prontidão estratégica até a identificação das maiores oportunidades de ganho.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="step-accent"></div><div class="step-num">01</div><div class="step-title">Diagnóstico de maturidade</div><div class="step-desc">Avaliamos 7 dimensões críticas — estratégia, governança, dados, pessoas, processos, investimento e experimentação — para mapear onde sua empresa realmente está.</div></div>
+      <div class="step-card"><div class="step-accent"></div><div class="step-num">02</div><div class="step-title">Diagnóstico de oportunidades</div><div class="step-desc">Para empresas que atingiram o nível mínimo de maturidade: identificamos os processos com maior potencial de ganho com IA, avaliados por 8 critérios de viabilidade.</div></div>
+      <div class="step-card"><div class="step-accent"></div><div class="step-num">03</div><div class="step-title">Resultado e próximos passos</div><div class="step-desc">Você recebe um diagnóstico detalhado com pontuação por dimensão, gaps críticos identificados e uma recomendação clara de como avançar com segurança.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sobre">
+  <div class="section-inner">
+    <div class="section-eyebrow">Quem está por trás</div>
+    <div class="sobre-grid">
+      <div class="sobre-avatar"><img src="FOTO_URL_AQUI" alt="Sebastião Nunes"></div>
+      <div>
+        <div class="sobre-name">Sebastião Nunes</div>
+        <div class="sobre-title">Executivo de Estratégia, Transformação e Inovação</div>
+        <p class="sobre-bio">Tenho sólida experiência em Planejamento Estratégico, Inovação e Transformação Empresarial. Ao longo da carreira, liderei iniciativas de transformação organizacional, governança corporativa, implantação de tecnologias, gestão de portfólio de projetos e PMO Executivo, apoiando empresas de diferentes portes e segmentos na construção de organizações mais eficientes, competitivas e sustentáveis.<br><br>Acredito que a Inteligência Artificial representa uma das maiores oportunidades de transformação da história dos negócios. No entanto, seu verdadeiro potencial somente se concretiza quando a tecnologia está alinhada à estratégia, aos processos, à cultura organizacional e ao desenvolvimento das lideranças e equipes.<br><br>O AI Ready nasceu justamente dessa convicção. Ao acompanhar organizações em suas jornadas de transformação, observei um padrão recorrente: muitas empresas iniciam projetos de IA impulsionadas pelo entusiasmo do mercado, antes mesmo de desenvolver as capacidades organizacionais necessárias para transformar tecnologia em valor para o negócio.<br><br>Por isso, concebi este diagnóstico para ser o primeiro passo dessa jornada. Mais do que medir o nível de maturidade em Inteligência Artificial, este diagnóstico ajuda empresas e lideranças a compreenderem seu estágio atual, identificarem prioridades de evolução e estabelecerem uma base sólida para que seus investimentos em IA gerem resultados concretos, sustentáveis e alinhados à estratégia empresarial.</p>
+        <div class="sobre-tags">
+          <span class="sobre-tag">Estratégia Corporativa</span>
+          <span class="sobre-tag">Transformação Empresarial</span>
+          <span class="sobre-tag">Governança</span>
+          <span class="sobre-tag">PMO Executivo</span>
+          <span class="sobre-tag">Inovação</span>
+          <span class="sobre-tag">Inteligência Artificial</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="diagnostico" id="diagnostico">
+  <div class="section-inner">
+    <div class="diagnostico-intro">
+      <div class="section-eyebrow">Diagnóstico gratuito</div>
+      <h2 class="section-title">Descubra onde sua empresa está</h2>
+      <p class="section-sub">Responda com honestidade. O diagnóstico leva aproximadamente 15 minutos e o resultado é imediato.</p>
+    </div>
+    <div class="tool-wrapper">
+      <div class="tool-body" id="tool-root"></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="section-inner">
+    <div class="section-eyebrow">Próximo nível</div>
+    <h2 class="section-title">Diagnóstico é o começo — não o fim</h2>
+    <p class="section-sub">Saber onde você está é o primeiro passo. Transformar esse diagnóstico em um plano de ação concreto é onde a consultoria estratégica entra.</p>
+    <a href="#" class="btn-primary" onclick="document.getElementById('diagnostico').scrollIntoView({behavior:'smooth'});return false;">Iniciar diagnóstico agora →</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 AI Ready · Sebastião Nunes · <a href="https://www.linkedin.com/in/sebastiao-nunes-rocha-de-souza" target="_blank">LinkedIn</a></p>
+</footer>
+
+<script>
+var SETORES=["Varejo","Indústria","Serviços Financeiros","Saúde","Logística e Transporte","Educação","Tecnologia","Agronegócio","Construção Civil","Serviços","Outros"];
+var DIMS=[
+  {id:"estrategia",title:"Estratégia e visão",desc:"A empresa sabe para onde quer ir com IA?",icon:"🎯",critica:true,alerta:"Sem uma visão estratégica clara, os projetos de IA tendem a surgir de forma isolada — cada área fazendo algo diferente, sem conexão com os objetivos do negócio. O resultado é investimento pulverizado, esforços duplicados e dificuldade em demonstrar retorno. IA sem estratégia vira experimento sem fim.",perguntas:["A liderança da empresa discute IA como parte da estratégia do negócio, não apenas como tendência tecnológica?","Existe uma visão clara de como a IA pode gerar valor para o negócio nos próximos 2 a 3 anos?","As iniciativas de IA estão conectadas aos objetivos estratégicos da empresa?"]},
+  {id:"governanca",title:"Governança e liderança",desc:"Quem decide, quem responde, quem financia?",icon:"🏛️",critica:true,alerta:"A ausência de governança é uma das principais causas de fracasso em projetos de IA. Quando não há um responsável claro e critérios definidos para decisão, as iniciativas ficam dependentes de entusiasmo individual — e param quando esse entusiasmo acaba. Além disso, a falta de políticas de uso expõe a empresa a riscos legais, de reputação e de segurança que muitas vezes só aparecem depois do problema instalado.",perguntas:["Existe um líder ou responsável definido para conduzir as iniciativas de IA na empresa?","Há critérios estabelecidos para decidir em quais projetos de IA vale a pena investir?","A empresa possui ou está construindo políticas de uso responsável e seguro de IA?"]},
+  {id:"dados",title:"Dados e tecnologia",desc:"A matéria-prima da IA está disponível e confiável?",icon:"📊",critica:true,alerta:"IA opera sobre dados — e dados de má qualidade produzem resultados ruins, independentemente de qual ferramenta for usada. Empresas que chegam a essa etapa sem dados organizados e acessíveis costumam descobrir isso tarde, após já terem investido tempo e dinheiro. A infraestrutura tecnológica também importa: sistemas muito desatualizados ou fragmentados criam barreiras que tornam a implantação lenta, cara e frustrante.",perguntas:["Os dados necessários para as áreas críticas do negócio estão disponíveis e organizados em sistemas acessíveis?","A empresa tem controle sobre a qualidade e confiabilidade dos seus dados?","Os sistemas e a infraestrutura tecnológica conseguem suportar novas ferramentas digitais e de IA?"]},
+  {id:"pessoas",title:"Pessoas e cultura",desc:"As pessoas estão prontas — técnica e culturalmente?",icon:"👥",critica:true,alerta:"Tecnologia sem pessoas preparadas não funciona. Quando a liderança não entende o básico sobre IA, as decisões de investimento tendem a ser mal calibradas — ora conservadoras demais, ora baseadas em promessas irreais. E quando as equipes operacionais não estão abertas à mudança, as ferramentas implantadas simplesmente não são usadas. Resistência cultural é silenciosa e costuma ser subestimada.",perguntas:["A liderança da empresa tem conhecimento suficiente sobre IA para tomar decisões informadas sobre o tema?","As equipes operacionais estão abertas a usar novas ferramentas digitais no dia a dia?","A empresa tem acesso a profissionais ou parceiros com conhecimento técnico em IA?"]},
+  {id:"processos",title:"Processos e operação",desc:"A empresa tem processos organizados e orientados a dados?",icon:"⚙️",critica:false,alerta:"",perguntas:["Os principais processos da empresa estão documentados e padronizados?","A empresa utiliza indicadores para acompanhar o desempenho das operações?","Há experiência na empresa em conduzir projetos de mudança ou melhoria de processos?"]},
+  {id:"investimento",title:"Investimento e gestão de risco",desc:"A empresa está preparada para investir com inteligência?",icon:"💰",critica:false,alerta:"",perguntas:["Existe orçamento definido ou disponibilidade de recursos para projetos de tecnologia e inovação?","Antes de investir em tecnologia, a empresa costuma avaliar o retorno esperado e os riscos envolvidos?","A empresa considera aspectos de segurança, privacidade e conformidade legal ao adotar novas tecnologias?"]},
+  {id:"experimentacao",title:"Experimentação e aprendizado",desc:"A empresa já tentou algo? Aprendeu com isso?",icon:"🔬",critica:false,alerta:"",perguntas:["A empresa já conduziu algum projeto piloto com tecnologia ou automação, mesmo que em pequena escala?","Quando um projeto não dá o resultado esperado, a empresa analisa o que aconteceu e ajusta a rota?","Existe abertura para testar soluções novas antes de uma implantação completa?"]}
+];
+var AREAS=[
+  {icon:"💼",nome:"Comercial e vendas",processos:["Prospecção e qualificação de leads","Elaboração de propostas comerciais","Acompanhamento do funil de vendas","Gestão de contratos com clientes","Análise de desempenho da equipe comercial","Pós-venda e relacionamento com clientes"]},
+  {icon:"💰",nome:"Financeiro",processos:["Contas a pagar e receber","Conciliação bancária","Emissão de relatórios financeiros","Gestão de fluxo de caixa","Análise de inadimplência","Fechamento contábil mensal"]},
+  {icon:"👥",nome:"Recursos humanos",processos:["Recrutamento e seleção","Integração de novos colaboradores","Controle de ponto e jornada","Gestão de benefícios","Avaliação de desempenho","Treinamento e desenvolvimento"]},
+  {icon:"🚚",nome:"Operações e logística",processos:["Planejamento e controle de produção","Gestão de estoque","Roteirização de entregas","Controle de qualidade","Manutenção de equipamentos","Gestão de fornecedores"]},
+  {icon:"🎧",nome:"Atendimento ao cliente",processos:["Triagem e classificação de chamados","Respostas a dúvidas frequentes","Acompanhamento de reclamações","Pesquisa de satisfação","Escalamento de ocorrências","Registro e histórico de atendimentos"]},
+  {icon:"📣",nome:"Marketing",processos:["Criação e revisão de conteúdo","Gestão de campanhas digitais","Análise de desempenho de canais","Segmentação de base de clientes","Monitoramento de concorrência","Relatórios de resultados"]},
+  {icon:"⚖️",nome:"Jurídico e compliance",processos:["Revisão e análise de contratos","Monitoramento de prazos legais","Gestão de documentos e arquivos","Acompanhamento de processos","Controle de conformidade regulatória","Elaboração de pareceres internos"]},
+  {icon:"💻",nome:"Tecnologia da informação",processos:["Suporte técnico e atendimento a chamados","Monitoramento de sistemas e infraestrutura","Gestão de acessos e permissões","Documentação técnica","Gestão de projetos de TI","Análise e tratamento de incidentes"]},
+  {icon:"📦",nome:"Compras e suprimentos",processos:["Cotação e seleção de fornecedores","Emissão e acompanhamento de pedidos","Gestão de contratos com fornecedores","Controle de entregas e prazos","Análise de gastos por categoria","Avaliação de desempenho de fornecedores"]},
+  {icon:"✏️",nome:"Outra área",processos:[],livre:true}
+];
+var CRITERIOS=[
+  {nome:"Padronização",desc:"O processo segue regras claras e definidas, com pouca variação na forma de execução?"},
+  {nome:"Repetitividade",desc:"O processo ocorre com frequência — diária, semanal ou mensal?"},
+  {nome:"Dependência de dados estruturados",desc:"O processo é baseado em dados organizados — sistemas, planilhas, formulários?"},
+  {nome:"Intensidade de esforço humano",desc:"O processo consome tempo significativo de pessoas com tarefas operacionais?"},
+  {nome:"Impacto no resultado do negócio",desc:"Um ganho nesse processo afeta diretamente receita, custo, qualidade ou experiência do cliente?"},
+  {nome:"Tolerância a erro",desc:"O processo admite uma margem de erro controlada, sem consequências graves em caso de falha?"},
+  {nome:"Baixa dependência de julgamento especializado",desc:"O processo depende pouco de conhecimento técnico altamente especializado para ser executado?"},
+  {nome:"Disponibilidade de dados históricos",desc:"Existem registros suficientes desse processo para configurar e validar uma solução de IA?"}
+];
+var OPTS_M=["1. Não existe / Nunca fizemos isso","2. Existe parcialmente ou está em discussão","3. Existe e funciona, mas com limitações","4. Existe, funciona bem e está consolidado"];
+var OPTS_P=["1. Não / Raramente","2. Parcialmente","3. Sim, com algumas limitações","4. Sim, totalmente"];
+
+var setorSel=null;
+var curM=0;
+var respostasM=[];
+for(var i=0;i<DIMS.length;i++){respostasM.push([null,null,null]);}
+var areaSel=null;
+var areaLivreNome="";
+var processosSel=[];
+var processosRespondidos={};
+var processosLivres=[];
+var curP=0;
+var respostasP={};
+
+function R(id){return document.getElementById(id);}
+function show(id){R(id).style.display="block";}
+function hide(id){R(id).style.display="none";}
+
+function renderTool(html){R("tool-root").innerHTML=html;}
+
+// ===== TELA SETOR =====
+function telaSetor(){
+  var html="<div class='fase-badge azul'>Passo 1 de 3 — Identificação</div>";
+  html+="<h2>Antes de começar</h2><p class='tsub'>Selecione o setor de atuação da sua empresa. Isso nos ajuda a contextualizar melhor os resultados do diagnóstico.</p>";
+  html+="<div class='setor-grid'>";
+  SETORES.forEach(function(s,i){
+    var sel=(setorSel===i)?" sel":"";
+    html+="<div class='setor-card"+sel+"' data-idx='"+i+"'>"+s+"</div>";
+  });
+  html+="</div>";
+  html+="<div class='tnav'><div></div><button class='tbtn verde' id='btn-setor-next'>Iniciar diagnóstico →</button></div>";
+  renderTool(html);
+  document.querySelectorAll("#tool-root .setor-card").forEach(function(el){
+    el.addEventListener("click",function(){setorSel=parseInt(this.dataset.idx);telaSetor();});
+  });
+  R("btn-setor-next").addEventListener("click",function(){
+    if(setorSel===null){alert("Selecione o setor antes de continuar.");return;}
+    curM=0;respostasM=[];for(var i=0;i<DIMS.length;i++){respostasM.push([null,null,null]);}renderDimM();
+  });
+}
+
+// ===== MATURIDADE =====
+function renderDimM(){
+  var d=DIMS[curM];
+  var pct=Math.round(((curM+1)/DIMS.length)*100);
+  var html="<div class='fase-badge azul'>Diagnóstico 1 de 2 — Maturidade</div>";
+  html+="<div class='prog-label'>Dimensão "+(curM+1)+" de "+DIMS.length+"</div>";
+  html+="<div class='prog-bar'><div class='prog-fill azul' style='width:"+pct+"%'></div></div>";
+  html+="<div class='dim-header'><div class='dim-icon azul'>"+d.icon+"</div><div><div class='dim-title'>"+d.title+(d.critica?"<span class='critica-tag'>dimensão crítica</span>":"")+"</div><div class='dim-desc'>"+d.desc+"</div></div></div>";
+  d.perguntas.forEach(function(q,qi){
+    html+="<div class='question'><div class='q-text'>"+q+"</div><div class='opts'>";
+    OPTS_M.forEach(function(op,oi){
+      var s=(respostasM[curM][qi]===(oi+1))?" sel":"";
+      html+="<div class='opt"+s+"' data-qi='"+qi+"' data-val='"+(oi+1)+"'>"+op+"</div>";
+    });
+    html+="</div></div>";
+  });
+  html+="<div class='tnav'>";
+  html+="<button class='tbtn' id='btn-back-m'"+(curM===0?" disabled":"")+"'>← Anterior</button>";
+  html+="<span class='step-ind'>"+(curM+1)+"/"+DIMS.length+"</span>";
+  html+="<button class='tbtn primary' id='btn-next-m'>"+(curM===DIMS.length-1?"Ver resultado →":"Próxima →")+"</button>";
+  html+="</div>";
+  renderTool(html);
+  document.querySelectorAll("#tool-root .opt").forEach(function(el){
+    el.addEventListener("click",function(){
+      respostasM[curM][parseInt(this.dataset.qi)]=parseInt(this.dataset.val);
+      renderDimM();
+    });
+  });
+  R("btn-next-m").addEventListener("click",function(){
+    if(respostasM[curM].some(function(r){return r===null;})){alert("Responda todas as perguntas antes de continuar.");return;}
+    if(curM<DIMS.length-1){curM++;renderDimM();}else{mostrarResultadoM();}
+  });
+  R("btn-back-m").addEventListener("click",function(){if(curM>0){curM--;renderDimM();}});
+}
+
+function dimScoreM(di){var s=0;respostasM[di].forEach(function(v){s+=v||0;});return Math.round((s/(respostasM[di].length*4))*5*10)/10;}
+function nivelInfo(sc){
+  if(sc<2)return{label:"Nível 1 — Iniciante",bg:"rgba(226,75,74,0.2)",txt:"#F7A09F"};
+  if(sc<3)return{label:"Nível 2 — Explorador",bg:"rgba(239,159,39,0.2)",txt:"#F5C87A"};
+  if(sc<3.75)return{label:"Nível 3 — Estruturado",bg:"rgba(0,196,154,0.15)",txt:"#00C49A"};
+  if(sc<4.5)return{label:"Nível 4 — Escalando",bg:"rgba(24,95,165,0.2)",txt:"#7BB8F5"};
+  return{label:"Nível 5 — Referência",bg:"rgba(83,74,183,0.2)",txt:"#B3AEF5"};
+}
+
+function mostrarResultadoM(){
+  var scores=DIMS.map(function(_,i){return dimScoreM(i);});
+  var media=Math.round((scores.reduce(function(a,b){return a+b;},0)/scores.length)*10)/10;
+  var nv=nivelInfo(media);
+  var criticasAbaixo=DIMS.reduce(function(acc,d,i){if(d.critica&&scores[i]<3)acc.push(i);return acc;},[]);
+  var apto=(media>=3&&criticasAbaixo.length===0);
+  var barCores=["#E24B4A","#EF9F27","#1D9E75","#185FA5"];
+  var dimRows=scores.map(function(s,i){
+    var pct=Math.round((s/5)*100);
+    var cor=s<2?barCores[0]:s<3?barCores[1]:s<4?barCores[2]:barCores[3];
+    var tag=DIMS[i].critica?(s<3?"<span class='tag-fail'>abaixo do mínimo</span>":"<span class='tag-ok'>ok</span>"):"";
+    return "<div class='bar-row'><div class='bar-label'>"+DIMS[i].title+tag+"</div><div class='bar-track'><div class='bar-fill' style='width:"+pct+"%;background:"+cor+"'></div></div><div class='bar-val'>"+s+"/5</div></div>";
+  }).join("");
+  var fb="";
+  if(!apto){
+    var mot="";
+    if(media<3)mot+="<br>• Pontuação geral abaixo do mínimo recomendado (média "+media+"/5).";
+    criticasAbaixo.forEach(function(di){mot+="<br>• Dimensão crítica <strong>\""+DIMS[di].title+"\"</strong> com pontuação "+scores[di]+"/5.";});
+    var det=criticasAbaixo.map(function(di){return "<div class='dim-alerta'><div class='dim-alerta-titulo'>"+DIMS[di].icon+" "+DIMS[di].title+"</div><div class='dim-alerta-texto'>"+DIMS[di].alerta+"</div></div>";}).join("");
+    fb="<div class='alerta-wrap'><div class='alerta-titulo'>⚠️ Atenção: bases que precisam ser fortalecidas</div><div class='alerta-geral'>Sua empresa ainda não atingiu o nível mínimo recomendado."+mot+"<br><br>Entenda o impacto de cada gap identificado:</div>"+det+"<div style='font-size:13px;color:rgba(247,160,159,0.8);margin-top:14px;line-height:1.6'>Isso não significa que IA está fora do alcance — significa que há fundações importantes a estruturar antes.</div></div>";
+    fb+="<div class='tcta-box'><p>Quer entender como estruturar essas bases e criar as condições certas para que a IA gere resultado real na sua empresa?</p><button class='tbtn verde' onclick=\"window.open('https://www.linkedin.com/in/sebastiao-nunes-rocha-de-souza','_blank')\">Falar com Sebastião Nunes ↗</button><br><button class='treiniciar' onclick='reiniciar()'>Reiniciar diagnóstico</button></div>";
+  } else {
+    fb="<div class='ok-box'><div class='ok-titulo'>✅ Sua empresa atingiu o nível mínimo recomendado</div><div class='ok-texto'>As bases estão no lugar. Isso coloca sua empresa em uma posição privilegiada — a maioria ainda não chegou aqui. O próximo passo é identificar onde a IA pode gerar o maior retorno para o seu negócio.</div></div>";
+    fb+="<div class='premio-box'><div class='premio-icon'>🎯</div><div class='premio-titulo'>Parabéns — sua empresa está pronta para o próximo nível</div><div class='premio-texto'>Por ter atingido o nível mínimo de maturidade, você tem acesso ao segundo diagnóstico: identificar quais processos têm maior potencial de ganho com IA.</div><button class='tbtn verde' onclick='iniciarDiagnosticoProcessos()'>Iniciar diagnóstico de oportunidades →</button></div>";
+  }
+  var html="<div class='fase-badge azul'>Resultado — Diagnóstico de Maturidade</div>";
+  html+="<div style='text-align:center;margin:16px 0 20px'><div class='r-badge' style='background:"+nv.bg+";color:"+nv.txt+"'>"+nv.label+"</div><div class='r-title'>Pontuação geral: "+media+"/5</div><div class='r-sub'>Veja abaixo o desempenho por dimensão.</div></div>";
+  html+="<div style='margin-bottom:16px'>"+dimRows+"</div>"+fb;
+  renderTool(html);
+}
+
+function iniciarDiagnosticoProcessos(){areaSel=null;areaLivreNome="";processosSel=[];processosRespondidos={};processosLivres=[];curP=0;respostasP={};telaArea();}
+
+function telaArea(){
+  var html="<div class='fase-badge verde'>Diagnóstico 2 de 2 — Oportunidades</div>";
+  html+="<h2>Diagnóstico de oportunidades em IA</h2><p class='tsub'>Selecione a área que deseja avaliar.</p>";
+  html+="<div class='area-grid'>";
+  AREAS.forEach(function(a,i){
+    var sel=(areaSel===i)?" sel":"";
+    var lv=a.livre?" livre":"";
+    html+="<div class='area-card"+sel+lv+"' data-idx='"+i+"'><div class='area-icon'>"+a.icon+"</div><div class='area-nome'>"+a.nome+"</div></div>";
+  });
+  html+="</div>";
+  if(areaSel!==null&&AREAS[areaSel].livre){
+    html+="<input class='input-livre' id='area-livre-input' type='text' placeholder='Digite o nome da área...' value='"+areaLivreNome+"'>";
+  }
+  html+="<div class='tnav'><div></div><button class='tbtn verde' id='btn-area-next'>Próxima →</button></div>";
+  renderTool(html);
+  document.querySelectorAll("#tool-root .area-card").forEach(function(el){
+    el.addEventListener("click",function(){areaSel=parseInt(this.dataset.idx);areaLivreNome="";telaArea();});
+  });
+  if(R("area-livre-input")){R("area-livre-input").addEventListener("input",function(){areaLivreNome=this.value;});}
+  R("btn-area-next").addEventListener("click",function(){
+    if(areaSel===null){alert("Selecione uma área para continuar.");return;}
+    if(AREAS[areaSel].livre&&!areaLivreNome.trim()){alert("Digite o nome da área para continuar.");return;}
+    telaProcessos();
+  });
+}
+
+function telaProcessos(){
+  var a=AREAS[areaSel];
+  var todosProc=a.processos.concat(processosLivres);
+  var jaRespondidos=Object.keys(processosRespondidos);
+  var html="<div class='fase-badge verde'>Diagnóstico 2 de 2 — Oportunidades</div>";
+  html+="<h2>"+(a.livre?areaLivreNome:a.nome)+"</h2><p class='tsub'>Selecione entre 1 e 5 processos para avaliar.</p>";
+  if(jaRespondidos.length>0){html+="<div class='proc-aviso'>✅ <strong>"+jaRespondidos.length+" processo(s) já avaliado(s)</strong> e preservado(s). Adicione novos para complementar.</div>";}
+  html+="<div class='proc-hint'>Marque os processos que existem e são relevantes na sua área:</div>";
+  html+="<div id='proc-list'>";
+  todosProc.forEach(function(nome){
+    var jaFeito=processosRespondidos[nome]!==undefined;
+    if(jaFeito){html+="<div class='proc-item sel respondido'><div class='proc-check'>✓</div><div class='proc-nome'>"+nome+"<span class='proc-tag'>já avaliado</span></div></div>";return;}
+    var sel=processosSel.indexOf(nome)>-1?" sel":"";
+    var chk=processosSel.indexOf(nome)>-1?"✓":"";
+    html+="<div class='proc-item"+sel+"' data-nome='"+nome+"'><div class='proc-check'>"+chk+"</div><div class='proc-nome'>"+nome+"</div></div>";
+  });
+  if(a.livre&&todosProc.length===0){html+="<div style='font-size:13px;color:var(--gray-500);margin-bottom:12px'>Adicione os processos desta área usando o campo abaixo.</div>";}
+  html+="</div>";
+  html+="<div style='margin-top:8px'><div style='font-size:13px;color:var(--gray-500);margin-bottom:6px'>Não encontrou o processo? Adicione abaixo:</div>";
+  html+="<div class='add-proc'><input type='text' id='proc-livre-input' placeholder='Digite o nome do processo...'><button id='btn-add-livre'>+ Adicionar</button></div></div>";
+  html+="<div class='tnav' style='margin-top:20px'><button class='tbtn' id='btn-voltar-area'>← Voltar</button><button class='tbtn verde' id='btn-proc-next'>Avaliar processos →</button></div>";
+  renderTool(html);
+  document.querySelectorAll("#tool-root #proc-list .proc-item:not(.respondido)").forEach(function(el){
+    el.addEventListener("click",function(){
+      var nome=this.dataset.nome;
+      var idx=processosSel.indexOf(nome);
+      if(idx>-1){processosSel.splice(idx,1);}
+      else{if(processosSel.length+Object.keys(processosRespondidos).length>=5){alert("Limite de 5 processos no total.");return;}processosSel.push(nome);}
+      telaProcessos();
+    });
+  });
+  R("btn-add-livre").addEventListener("click",function(){
+    var val=R("proc-livre-input").value.trim();
+    if(!val)return;
+    var a2=AREAS[areaSel];
+    if(processosLivres.indexOf(val)>-1||a2.processos.indexOf(val)>-1){alert("Processo já existe na lista.");return;}
+    processosLivres.push(val);
+    if(processosSel.length+Object.keys(processosRespondidos).length<5)processosSel.push(val);
+    telaProcessos();
+  });
+  R("btn-voltar-area").addEventListener("click",function(){processosSel=[];processosLivres=[];telaArea();});
+  R("btn-proc-next").addEventListener("click",function(){
+    if(processosSel.length===0&&Object.keys(processosRespondidos).length===0){alert("Selecione ao menos um processo.");return;}
+    if(processosSel.length===0){mostrarResultadoP();return;}
+    respostasP={};
+    processosSel.forEach(function(nome){respostasP[nome]=new Array(CRITERIOS.length).fill(null);});
+    curP=0;telaAvaliacao();
+  });
+}
+
+function telaAvaliacao(){
+  var nome=processosSel[curP];
+  var total=processosSel.length;
+  var pct=Math.round(((curP+1)/total)*100);
+  var resps=respostasP[nome];
+  var html="<div class='fase-badge verde'>Diagnóstico 2 de 2 — Oportunidades</div>";
+  html+="<div class='prog-label'>Processo "+(curP+1)+" de "+total+": "+nome+"</div>";
+  html+="<div class='prog-bar'><div class='prog-fill verde' style='width:"+pct+"%'></div></div>";
+  html+="<div class='proc-header'><div style='font-size:12px;color:var(--gray-500);margin-bottom:4px'>Processo em avaliação:</div><div style='font-size:16px;font-weight:700;color:var(--white)'>"+nome+"</div></div>";
+  CRITERIOS.forEach(function(c,ci){
+    html+="<div class='question'><div class='q-text'>"+c.desc+"</div><div class='opts'>";
+    OPTS_P.forEach(function(op,oi){
+      var s=(resps[ci]===(oi+1))?" sel-verde sel":"";
+      html+="<div class='opt"+s+"' data-ci='"+ci+"' data-val='"+(oi+1)+"'>"+op+"</div>";
+    });
+    html+="</div></div>";
+  });
+  html+="<div class='tnav-3'>";
+  html+="<button class='tbtn' id='btn-back-p'"+(curP===0?" disabled":"")+"'>← Anterior</button>";
+  html+="<button class='tbtn outline-verde' id='btn-add-proc'>+ Adicionar processos</button>";
+  html+="<button class='tbtn verde' id='btn-next-p'>"+(curP===total-1?"Ver resultado →":"Próximo processo →")+"</button>";
+  html+="</div>";
+  renderTool(html);
+  document.querySelectorAll("#tool-root .opt").forEach(function(el){
+    el.addEventListener("click",function(){
+      var n=processosSel[curP];
+      respostasP[n][parseInt(this.dataset.ci)]=parseInt(this.dataset.val);
+      telaAvaliacao();
+    });
+  });
+  R("btn-next-p").addEventListener("click",function(){
+    var n=processosSel[curP];
+    if(respostasP[n].some(function(r){return r===null;})){alert("Responda todos os critérios antes de continuar.");return;}
+    processosRespondidos[n]=respostasP[n].slice();
+    if(curP<processosSel.length-1){curP++;telaAvaliacao();}else{mostrarResultadoP();}
+  });
+  R("btn-back-p").addEventListener("click",function(){if(curP>0){curP--;telaAvaliacao();}});
+  R("btn-add-proc").addEventListener("click",function(){
+    var n=processosSel[curP];
+    if(respostasP[n]&&respostasP[n].some(function(r){return r!==null;})){
+      processosRespondidos[n]=respostasP[n].slice();
+      processosSel.splice(curP,1);
+    }
+    telaProcessos();
+  });
+}
+
+function procScore(scores){var s=0;scores.forEach(function(v){s+=v||0;});return Math.round((s/(scores.length*4))*100);}
+function gerarJust(nome,sc){
+  var p=[];
+  if(sc[0]>=3&&sc[1]>=3)p.push("é um processo padronizado e frequente");
+  else if(sc[0]>=3)p.push("segue regras bem definidas");
+  else if(sc[1]>=3)p.push("ocorre com alta frequência");
+  if(sc[2]>=3)p.push("opera sobre dados estruturados e acessíveis");
+  if(sc[3]>=3)p.push("consome tempo significativo das equipes");
+  if(sc[4]>=3)p.push("tem impacto direto no resultado do negócio");
+  if(sc[6]>=3)p.push("depende pouco de julgamento humano altamente especializado");
+  if(sc[7]>=3)p.push("conta com histórico de dados suficiente para validar soluções");
+  if(p.length===0)return "Este processo apresenta potencial de melhoria com IA, mas exige avaliação mais detalhada para definir a abordagem adequada.";
+  var t="O processo "+nome.toLowerCase()+" "+p.slice(0,3).join(", ");
+  if(sc[5]<=2)t+=". Vale atenção: a baixa tolerância a erros exige uma implantação cuidadosa e validação rigorosa antes de escalar";
+  return t+".";
+}
+
+function mostrarResultadoP(){
+  var resultados=Object.keys(processosRespondidos).map(function(nome){
+    var sc=processosRespondidos[nome];
+    return{nome:nome,total:procScore(sc),scores:sc,livre:processosLivres.indexOf(nome)>-1};
+  });
+  resultados.sort(function(a,b){return b.total-a.total;});
+  var top=resultados.slice(0,3);
+  var a=AREAS[areaSel];
+  var nomeArea=a.livre?areaLivreNome:a.nome;
+  var temLivre=top.some(function(r){return r.livre;});
+  var rankLabels=["🥇 Maior potencial","🥈 Segundo maior potencial","🥉 Terceiro maior potencial"];
+  var cardsHTML=top.map(function(r,i){
+    var crits=CRITERIOS.map(function(c,ci){
+      var pct=Math.round(((r.scores[ci]||0)/4)*100);
+      return "<div class='crit-row'><div class='crit-nome'>"+c.nome+"</div><div class='crit-track'><div class='crit-fill' style='width:"+pct+"%'></div></div><div class='crit-val'>"+pct+"%</div></div>";
+    }).join("");
+    var livreTag=r.livre?"<div class='livre-aviso'>Este processo foi inserido manualmente. Uma análise consultiva pode aprofundar os pontos específicos desta avaliação.</div>":"";
+    return "<div class='proc-result-card"+(i===0?" top":"")+"'><div class='proc-rank'>"+rankLabels[i]+"</div><div class='proc-result-nome'>"+r.nome+"</div><div class='proc-score-geral'>Pontuação de viabilidade: "+r.total+"%</div>"+crits+"<div class='proc-just'>"+gerarJust(r.nome,r.scores)+"</div>"+livreTag+"</div>";
+  }).join("");
+  var livreAviso=temLivre?"<div class='livre-aviso' style='margin-bottom:16px'>Um ou mais processos foram inseridos manualmente. Para esses casos, uma conversa aprofundada permite capturar nuances que o diagnóstico automatizado não cobre completamente.</div>":"";
+  var html="<div class='fase-badge verde'>Resultado — Diagnóstico de Oportunidades</div>";
+  html+="<div style='text-align:center;margin:16px 0 20px'><div style='font-size:20px;font-weight:700;color:var(--white);margin-bottom:6px;font-family:var(--font-display)'>Área: "+nomeArea+"</div><div style='font-size:14px;color:var(--gray-300);line-height:1.6'>Os processos abaixo foram identificados como os de maior potencial de ganho com IA na sua área.</div></div>";
+  html+=livreAviso+cardsHTML;
+  html+="<div class='tcta-box'><p>Estes são os processos com maior viabilidade — mas transformar esse potencial em resultado real exige um plano estruturado, com priorização, tecnologia, gestão de mudança e indicadores.</p><button class='tbtn verde' onclick=\"window.open('https://www.linkedin.com/in/sebastiao-nunes-rocha-de-souza','_blank')\">Falar com Sebastião Nunes ↗</button><br><button class='treiniciar' onclick='reiniciar()'>Reiniciar diagnóstico</button></div>";
+  renderTool(html);
+}
+
+function reiniciar(){
+  setorSel=null;curM=0;respostasM=[];for(var i=0;i<DIMS.length;i++){respostasM.push([null,null,null]);}
+  areaSel=null;areaLivreNome="";processosSel=[];processosRespondidos={};processosLivres=[];curP=0;respostasP={};
+  telaSetor();
+}
+
+telaSetor();
+</script>
+</body>
+</html>
