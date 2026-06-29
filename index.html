@@ -428,6 +428,38 @@ function telaSetor(){
   });
 }
 
+// ===== CAPTURA =====
+
+function telaCaptura(){
+  var html="<div class='fase-badge azul'>Quase lá</div>";
+  html+="<div style='text-align:center;margin-bottom:24px'>";
+  html+="<div style='font-size:22px;font-weight:700;color:var(--white);margin-bottom:10px;font-family:var(--font-display)'>Seu diagnóstico está pronto</div>";
+  html+="<div style='font-size:14px;color:var(--gray-300);line-height:1.7;margin-bottom:24px'>Informe seus dados abaixo para visualizar o resultado completo. Você também receberá orientações personalizadas com base no seu diagnóstico.</div>";
+  html+="</div>";
+  html+="<div style='display:flex;flex-direction:column;gap:10px;margin-bottom:20px'>";
+  html+="<input class='input-livre' id='cap-nome' type='text' placeholder='Nome completo *'>";
+  html+="<input class='input-livre' id='cap-empresa' type='text' placeholder='Empresa *'>";
+  html+="<input class='input-livre' id='cap-cargo' type='text' placeholder='Cargo *'>";
+  html+="<input class='input-livre' id='cap-email' type='email' placeholder='E-mail corporativo *'>";
+  html+="</div>";
+  html+="<div style='font-size:12px;color:var(--gray-500);margin-bottom:20px;line-height:1.5'>Seus dados são utilizados exclusivamente para envio do resultado e contato sobre os próximos passos. Não compartilhamos suas informações com terceiros.</div>";
+  html+="<button class='tbtn verde' id='btn-captura' style='width:100%;padding:14px'>Ver meu resultado →</button>";
+  renderTool(html);
+  R("btn-captura").addEventListener("click",function(){
+    var nome=R("cap-nome").value.trim();
+    var empresa=R("cap-empresa").value.trim();
+    var cargo=R("cap-cargo").value.trim();
+    var email=R("cap-email").value.trim();
+    if(!nome||!empresa||!cargo||!email){alert("Por favor, preencha todos os campos antes de continuar.");return;}
+    if(!email.includes("@")){alert("Por favor, insira um e-mail válido.");return;}
+    // Enviar para Tally
+    var tallyUrl="https://tally.so/r/J9gV24?nome="+encodeURIComponent(nome)+"&empresa="+encodeURIComponent(empresa)+"&cargo="+encodeURIComponent(cargo)+"&email="+encodeURIComponent(email);
+    fetch(tallyUrl,{method:"GET",mode:"no-cors"}).catch(function(){});
+    // Mostrar resultado
+    mostrarResultadoM();
+  });
+}
+
 // ===== MATURIDADE =====
 function renderDimM(){
   var d=DIMS[curM];
@@ -458,7 +490,7 @@ function renderDimM(){
   });
   R("btn-next-m").addEventListener("click",function(){
     if(respostasM[curM].some(function(r){return r===null;})){alert("Responda todas as perguntas antes de continuar.");return;}
-    if(curM<DIMS.length-1){curM++;renderDimM();}else{mostrarResultadoM();}
+    if(curM<DIMS.length-1){curM++;renderDimM();}else{telaCaptura();}
   });
   R("btn-back-m").addEventListener("click",function(){if(curM>0){curM--;renderDimM();}});
 }
