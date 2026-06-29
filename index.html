@@ -390,6 +390,7 @@ var OPTS_M=["1. Não existe / Nunca fizemos isso","2. Existe parcialmente ou est
 var OPTS_P=["1. Não / Raramente","2. Parcialmente","3. Sim, com algumas limitações","4. Sim, totalmente"];
 
 var setorSel=null;
+var leadDados={nome:"",empresa:"",cargo:"",email:""};
 var curM=0;
 var respostasM=[];
 for(var i=0;i<DIMS.length;i++){respostasM.push([null,null,null]);}
@@ -452,14 +453,92 @@ function telaCaptura(){
     var email=R("cap-email").value.trim();
     if(!nome||!empresa||!cargo||!email){alert("Por favor, preencha todos os campos antes de continuar.");return;}
     if(!email.includes("@")){alert("Por favor, insira um e-mail válido.");return;}
-    var formData=new FormData();
-    formData.append("Nome completo",nome);
-    formData.append("Empresa",empresa);
-    formData.append("Cargo",cargo);
-    formData.append("E-mail corporativo",email);
-    fetch("https://tally.so/r/J9gV24",{method:"POST",body:formData,mode:"no-cors"}).catch(function(){});
+    leadDados={nome:nome,empresa:empresa,cargo:cargo,email:email};
     mostrarResultadoM();
   });
+}
+
+async function salvarLead(nome,empresa,cargo,email){
+  try{
+    var SHEET_ID="1GUpUgvYPUa9OvP7ikLx5RMk8PkMJy7he4-TVw2qWLZw";
+    var now=new Date();
+    var data=now.toLocaleDateString("pt-BR")+" "+now.toLocaleTimeString("pt-BR");
+    var setor=SETORES[setorSel]||"Não informado";
+
+    // Calcular scores de maturidade
+    var scores=DIMS.map(function(_,i){
+      var rs=respostasM[i],sum=0;
+      for(var j=0;j<rs.length;j++){sum+=(rs[j]||0);}
+      return Math.round((sum/(rs.length*4))*5*10)/10;
+    });
+    var media=Math.round((scores.reduce(function(a,b){return a+b;},0)/scores.length)*10)/10;
+    var criticasAbaixo=DIMS.filter(function(d,i){return d.critica&&scores[i]<3;});
+    var apto=(media>=3&&criticasAbaixo.length===0)?"Sim":"Não";
+
+    // Nível de maturidade
+    var nivel="";
+    if(media<2)nivel="Nível 1 — Iniciante";
+    else if(media<3)nivel="Nível 2 — Explorador";
+    else if(media<3.75)nivel="Nível 3 — Estruturado";
+    else if(media<4.5)nivel="Nível 4 — Escalando";
+    else nivel="Nível 5 — Referência";
+
+    // Área e processos do segundo diagnóstico
+    var nomeArea="Não chegou ao 2º diagnóstico";
+    var proc1="",proc2="",proc3="";
+    if(areaSel!==null){
+      nomeArea=AREAS[areaSel].livre?areaLivreNome:AREAS[areaSel].nome;
+      var respondidos=Object.keys(processosRespondidos);
+      var resultados=respondidos.map(function(n){
+        var sc=processosRespondidos[n],s=0;
+        for(var j=0;j<sc.length;j++){s+=(sc[j]||0);}
+        return{nome:n,total:Math.round((s/(sc.length*4))*100)};
+      });
+      resultados.sort(function(a,b){return b.total-a.total;});
+      if(resultados[0])proc1=resultados[0].nome+" ("+resultados[0].total+"%)";
+      if(resultados[1])proc2=resultados[1].nome+" ("+resultados[1].total+"%)";
+      if(resultados[2])proc3=resultados[2].nome+" ("+resultados[2].total+"%)";
+    }
+
+    var token=await getToken();
+    await fetch("https://sheets.googleapis.com/v4/spreadsheets/"+SHEET_ID+"/values/A:T:append?valueInputOption=USER_ENTERED",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+      body:JSON.stringify({values:[[
+        data,nome,empresa,cargo,email,setor,
+        nivel,media,
+        scores[0],scores[1],scores[2],scores[3],scores[4],scores[5],scores[6],
+        apto,nomeArea,proc1,proc2,proc3
+      ]]})
+    });
+  }catch(e){console.error("Erro ao salvar lead:",e);}
+}
+
+async function getToken(){
+  var now=Math.floor(Date.now()/1000);
+  var header=btoa(JSON.stringify({alg:"RS256",typ:"JWT"}));
+  var claim=btoa(JSON.stringify({
+    iss:"aiready-sheets@nimble-crane-500917-u7.iam.gserviceaccount.com",
+    scope:"https://www.googleapis.com/auth/spreadsheets",
+    aud:"https://oauth2.googleapis.com/token",
+    exp:now+3600,iat:now
+  }));
+  var privateKey="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoRySII1QqDaK+\n76P2d38yS05lLPtjrrVEYVA19fkV5H55lrrpUuewKM2hFkYGkVjiJ84kFO81BVTC\na7jQQIAKhZeJDZeuVTA3GdAm0IU4Xk0rZP/QPdDTvFEb7bJqzPvdcyZoInlsCTcm\nZ7o8FkmcvLc4dbVYqy5/KyCIW9BCAct168Vz8CuykEnSfu0FIpqawmliGeQTIqHV\nG3RuqQjvgfWGDT2NchC7Z/GogXRlYpW0bv5AH+VrbD5GAGZ5PQFvdZ4ynrt4l+zE\n/a2Vy0R5WUKjErGRwSJyYwGjCYW3Gbiw+ShKKT69Zhw++xcYPQwyJKtB9ONHuoSW\nfnpIExV/AgMBAAECggEALRs8yJ0nr0oOaL3VpngriTC0Z9xh2jt3bUfkd0JirSKd\nYDwuB+LoJckaLWbKCHKnb5+Z2wQdhonSSXcUiAXyDF/42YziLqG5Fdv+dpkITK7C\nYrJk+83GDyt4VlMlswkVLivyjJFJGNNzjADb48VZoADZ3/F1Vbo08XN++e4aacaf\n+7tywmPhpO69VOGUKUOxYkiaClYezD0lk2QFLSv6jEgDyKE8ScYRfcOrnxpy81BV\nMqC0iXoABGN9eigapBdSZ5ON0BN/zJtmGxReR6MZryhBFEFM5i1NHIxjaMj2dEAj\n89QndkEfcLVZi72OvkT8XgK5CulQzKIEr6wUF0VOMQKBgQDZynDM/1vU1BFxmKjT\nldmclgHu4CowMUwUuzuoUTUBI85kkzT9mYDGMN5I1Tob1uG8a7B+y66HTMHjPbCC\nxQoHpgUV0I8y/BDZYhWYIW6UIw80TQFwI3TRBAdBUOCkflWBhVoo6PRD7W2ujJmI\nA1O4HO6+Mo5ChPCJKpx64TtfOQKBgQDFzPKe1cy4jZxosP/OV+1VqNsr0MIWgWkr\nrJlM74SAdFvLHR69Uod9K2AIs/I5vRpZ2IVEpqrZnlDLErkfWPHmqzsWtMkpu5EM\nNaa0gHOxzh9EUigH1Q/7ipQej4FzG1IfTPZIxt9prz42vdVy/OZCRmR4f3Idk9aR\nfxQd7TZidwKBgQCpf5lsoeyZZfaxfwsdqMk0ybZ1b7bFzQgWNmXGqHTlDzXpJnwe\nRqJnHM9Sxcg0tHb4yqMQ+3o4SK+5KGDAVZNpwnbAtJFOL8j5NhHyVUqXNfX2UVwm\nJyIaLdVrqwM6Yiwv4lX58ttwJk+vgjNXHKfCaZoRIo1/DbGaPzSLmdE4WQKBgHBy\nf6dOchCk6LsXjIU4tULSOK7jAcOblDdw6sGzFIeWHq0Mg/IrHb1J0FGCQv0SBQ34\nqmKJwWzvtIyNu1IX1YVF6NSSuB2SdPYU9g19TMhTHrFPZ1R0ip58fJIXEQdoC7qh\nnQ1oiY/iQSMLrnGtVhVtQSbDhRNNfVi/fqc4uIcnAoGAP40LQNPbqI3mAzGSiEfG\ndxuuw6UkO7ppQUNwjZLCNzuv/qImOA5bC8pAMs+3uRxpAhoUIxvFczdqYbVTWccV\nOC/z5cQ0MaXAyvMJnL1uXK5eFSiWcBJQ8pF9RBgBpTYDV/mUEEybtOuUM54jZZUB\niK5SlYd1p2lEVgl51rB6TdE=\n-----END PRIVATE KEY-----\n";
+  // Assinar JWT com RSA-SHA256
+  var pemContents=privateKey.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g,"");
+  var binaryDer=Uint8Array.from(atob(pemContents),c=>c.charCodeAt(0));
+  var cryptoKey=await crypto.subtle.importKey("pkcs8",binaryDer.buffer,{name:"RSASSA-PKCS1-v1_5",hash:"SHA-256"},false,["sign"]);
+  var signingInput=header+"."+claim;
+  var encoder=new TextEncoder();
+  var signature=await crypto.subtle.sign("RSASSA-PKCS1-v1_5",cryptoKey,encoder.encode(signingInput));
+  var jwt=signingInput+"."+btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");
+  var resp=await fetch("https://oauth2.googleapis.com/token",{
+    method:"POST",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    body:"grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion="+jwt
+  });
+  var data=await resp.json();
+  return data.access_token;
 }
 
 // ===== MATURIDADE =====
@@ -704,6 +783,8 @@ function mostrarResultadoP(){
   html+=livreAviso+cardsHTML;
   html+="<div class='tcta-box'><p>Estes são os processos com maior viabilidade — mas transformar esse potencial em resultado real exige um plano estruturado, com priorização, tecnologia, gestão de mudança e indicadores.</p><button class='tbtn verde' onclick=\"window.open('https://www.linkedin.com/in/sebastiao-nunes-rocha-de-souza','_blank')\">Falar com Sebastião Nunes ↗</button><br><button class='treiniciar' onclick='reiniciar()'>Reiniciar diagnóstico</button></div>";
   renderTool(html);
+
+  if(leadDados.nome){salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);}
 }
 
 function reiniciar(){
