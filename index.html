@@ -614,6 +614,8 @@ function mostrarResultadoM(){
   html+="<div style='text-align:center;margin:16px 0 20px'><div class='r-badge' style='background:"+nv.bg+";color:"+nv.txt+"'>"+nv.label+"</div><div class='r-title'>Pontuação geral: "+media+"/5</div><div class='r-sub'>Veja abaixo o desempenho por dimensão.</div></div>";
   html+="<div style='margin-bottom:16px'>"+dimRows+"</div>"+fb;
   renderTool(html);
+  // Salvar lead após resultado de maturidade
+  if(leadDados.nome){salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);}
 }
 
 function iniciarDiagnosticoProcessos(){areaSel=null;areaLivreNome="";processosSel=[];processosRespondidos={};processosLivres=[];curP=0;respostasP={};telaArea();}
