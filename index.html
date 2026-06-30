@@ -460,6 +460,7 @@ function telaCaptura(){
 
 async function salvarLead(nome,empresa,cargo,email){
   try{
+    nome=nome||"Anônimo";empresa=empresa||"Não informado";cargo=cargo||"Não informado";email=email||"Não informado";
     var SHEET_ID="1GUpUgvYPUa9OvP7ikLx5RMk8PkMJy7he4-TVw2qWLZw";
     var now=new Date();
     var data=now.toLocaleDateString("pt-BR")+" "+now.toLocaleTimeString("pt-BR");
@@ -571,7 +572,7 @@ function renderDimM(){
   });
   R("btn-next-m").addEventListener("click",function(){
     if(respostasM[curM].some(function(r){return r===null;})){alert("Responda todas as perguntas antes de continuar.");return;}
-    if(curM<DIMS.length-1){curM++;renderDimM();}else{telaCaptura();}
+    if(curM<DIMS.length-1){curM++;renderDimM();}else{leadDados={nome:"",empresa:"",cargo:"",email:""};mostrarResultadoM();}
   });
   R("btn-back-m").addEventListener("click",function(){if(curM>0){curM--;renderDimM();}});
 }
@@ -615,7 +616,7 @@ function mostrarResultadoM(){
   html+="<div style='margin-bottom:16px'>"+dimRows+"</div>"+fb;
   renderTool(html);
   // Salvar lead após resultado de maturidade
-  if(leadDados.nome){salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);}
+  salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);
 }
 
 function iniciarDiagnosticoProcessos(){areaSel=null;areaLivreNome="";processosSel=[];processosRespondidos={};processosLivres=[];curP=0;respostasP={};telaArea();}
@@ -786,7 +787,7 @@ function mostrarResultadoP(){
   html+="<div class='tcta-box'><p>Estes são os processos com maior viabilidade — mas transformar esse potencial em resultado real exige um plano estruturado, com priorização, tecnologia, gestão de mudança e indicadores.</p><button class='tbtn verde' onclick=\"window.open('https://www.linkedin.com/in/sebastiao-nunes-rocha-de-souza','_blank')\">Falar com Sebastião Nunes ↗</button><br><button class='treiniciar' onclick='reiniciar()'>Reiniciar diagnóstico</button></div>";
   renderTool(html);
 
-  if(leadDados.nome){salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);}
+  salvarLead(leadDados.nome,leadDados.empresa,leadDados.cargo,leadDados.email);
 }
 
 function reiniciar(){
