@@ -458,6 +458,8 @@ function telaCaptura(){
   });
 }
 
+var leadRowNumber=null;
+
 async function salvarLead(nome,empresa,cargo,email){
   try{
     nome=nome||"Anônimo";empresa=empresa||"Não informado";cargo=cargo||"Não informado";email=email||"Não informado";
@@ -475,18 +477,20 @@ async function salvarLead(nome,empresa,cargo,email){
     var media=Math.round((scores.reduce(function(a,b){return a+b;},0)/scores.length)*10)/10;
     var criticasAbaixo=DIMS.filter(function(d,i){return d.critica&&scores[i]<3;});
     var apto=(media>=3&&criticasAbaixo.length===0)?"Sim":"Não";
+    var aptoNum=apto==="Sim"?1:0;
 
     // Nível de maturidade
     var nivel="";
-    if(media<2)nivel="Nível 1 — Iniciante";
-    else if(media<3)nivel="Nível 2 — Explorador";
-    else if(media<3.75)nivel="Nível 3 — Estruturado";
-    else if(media<4.5)nivel="Nível 4 — Escalando";
-    else nivel="Nível 5 — Referência";
+    var nivelNum=0;
+    if(media<2){nivel="Nível 1 — Iniciante";nivelNum=1;}
+    else if(media<3){nivel="Nível 2 — Explorador";nivelNum=2;}
+    else if(media<3.75){nivel="Nível 3 — Estruturado";nivelNum=3;}
+    else if(media<4.5){nivel="Nível 4 — Escalando";nivelNum=4;}
+    else{nivel="Nível 5 — Referência";nivelNum=5;}
 
     // Área e processos do segundo diagnóstico
     var nomeArea="Não chegou ao 2º diagnóstico";
-    var proc1="",proc2="",proc3="";
+    var proc1Nome="",proc1Score="",proc2Nome="",proc2Score="",proc3Nome="",proc3Score="";
     if(areaSel!==null){
       nomeArea=AREAS[areaSel].livre?areaLivreNome:AREAS[areaSel].nome;
       var respondidos=Object.keys(processosRespondidos);
@@ -496,22 +500,41 @@ async function salvarLead(nome,empresa,cargo,email){
         return{nome:n,total:Math.round((s/(sc.length*4))*100)};
       });
       resultados.sort(function(a,b){return b.total-a.total;});
-      if(resultados[0])proc1=resultados[0].nome+" ("+resultados[0].total+"%)";
-      if(resultados[1])proc2=resultados[1].nome+" ("+resultados[1].total+"%)";
-      if(resultados[2])proc3=resultados[2].nome+" ("+resultados[2].total+"%)";
+      if(resultados[0]){proc1Nome=resultados[0].nome;proc1Score=resultados[0].total;}
+      if(resultados[1]){proc2Nome=resultados[1].nome;proc2Score=resultados[1].total;}
+      if(resultados[2]){proc3Nome=resultados[2].nome;proc3Score=resultados[2].total;}
     }
 
+    var rowValues=[
+      data,nome,empresa,cargo,email,setor,
+      nivel,nivelNum,media,
+      scores[0],scores[1],scores[2],scores[3],scores[4],scores[5],scores[6],
+      apto,aptoNum,nomeArea,
+      proc1Nome,proc1Score,proc2Nome,proc2Score,proc3Nome,proc3Score
+    ];
+
     var token=await getToken();
-    await fetch("https://sheets.googleapis.com/v4/spreadsheets/"+SHEET_ID+"/values/A:T:append?valueInputOption=USER_ENTERED",{
-      method:"POST",
-      headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
-      body:JSON.stringify({values:[[
-        data,nome,empresa,cargo,email,setor,
-        nivel,media,
-        scores[0],scores[1],scores[2],scores[3],scores[4],scores[5],scores[6],
-        apto,nomeArea,proc1,proc2,proc3
-      ]]})
-    });
+
+    if(leadRowNumber===null){
+      // Primeira vez: criar nova linha (append) e descobrir o número dela
+      var resp=await fetch("https://sheets.googleapis.com/v4/spreadsheets/"+SHEET_ID+"/values/A:Y:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS",{
+        method:"POST",
+        headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+        body:JSON.stringify({values:[rowValues]})
+      });
+      var respData=await resp.json();
+      if(respData.updates&&respData.updates.updatedRange){
+        var match=respData.updates.updatedRange.match(/!A(\d+)/);
+        if(match)leadRowNumber=parseInt(match[1]);
+      }
+    } else {
+      // Já existe linha: atualizar (update) a mesma linha
+      await fetch("https://sheets.googleapis.com/v4/spreadsheets/"+SHEET_ID+"/values/A"+leadRowNumber+":Y"+leadRowNumber+"?valueInputOption=USER_ENTERED",{
+        method:"PUT",
+        headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},
+        body:JSON.stringify({values:[rowValues]})
+      });
+    }
   }catch(e){console.error("Erro ao salvar lead:",e);}
 }
 
